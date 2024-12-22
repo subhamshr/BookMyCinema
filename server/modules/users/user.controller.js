@@ -92,7 +92,116 @@ const generateToken = async (payload) => {
     return validOTP;
   };
   
-
+  const list = async ({ page = 1, limit = 2, role, search }) => {
+    const query = [];
+  
+    // search
+    if (search?.name) {
+      query.push({
+        $match: {
+          name: new RegExp(search?.name, "gi"),
+        },
+      });
+    }
+    if (search?.email) {
+      query.push({
+        $match: {
+          email: new RegExp(search?.email, "gi"),
+        },
+      });
+    }
+  
+    // sort
+    query.push({
+      $sort: {
+        createdAt: 1,
+      },
+    });
+  
+    // filter based on role assignment, TODO accept array remaining
+    if (role) {
+      query.push({
+        $match: {
+          roles: filter,
+        },
+      });
+    }
+  
+    // pagination
+    query.push(
+      {
+        $facet: {
+          metadata: [
+            {
+              $count: "total",
+            },
+          ],
+          data: [
+            {
+              $skip: (+page - 1) * +limit, // +limit ->Number(limit)
+            },
+            {
+              $limit: +limit,
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          total: {
+            $arrayElemAt: ["$metadata.total", 0],
+          },
+        },
+      },
+      {
+        $project: {
+          metadata: 0,
+          "data.password": 0,
+        },
+      }
+    );
+  
+    const result = await userModel.aggregate(query);
+  
+    return {
+      total: result[0]?.total || 0,
+      users: result[0]?.data,
+      page: +page, //+page = Number(page)
+      limit: +limit, //+limit = Number(limit)
+    };
+  };
+  
+  const blockUser = async (id) => {
+    const user = await userModel.findOne({ _id: id });
+    if (!user) throw new Error("User not found");
+    const statusPayload = {
+      isActive: !user?.isActive,
+    };
+    const updatedUser = await userModel.updateOne({ _id: id }, statusPayload);
+    if (!updatedUser) throw new Error("Something went wrong");
+    return user;
+  };
+  
+  const removeById = (id) => {
+    return userModel.deleteOne({ _id: id });
+  };
+  
+  const getProfile = (_id) => {
+    return userModel.findOne({ _id });
+  };
+  
+  const updateByAdmin = async (id, payload) => {
+    return userModel.findOneAndUpdate({ _id: id }, payload, { new: true }); // {new : true} immediately return updated data
+  };
+  
+  const updateById = async (id, payload) => {
+    return userModel.findOneAndUpdate({ _id: id }, payload, { new: true });
+  };
+  
+  const getById = async (id) => {
+    return userModel.findOne({ _id: id });
+  };
+  
 
 const changePassword = async (id, payload) => {
     const { oldPassword, newPassword } = payload;
@@ -167,6 +276,13 @@ const changePassword = async (id, payload) => {
     login,
     generateToken,
     verifyEmail,
+    blockUser,
+  getById,
+  list,
+  getProfile,
+  updateById,
+  updateByAdmin,
+  removeById,
     changePassword,
     resetPassword,
     forgetPasswordTokenGeneration,
