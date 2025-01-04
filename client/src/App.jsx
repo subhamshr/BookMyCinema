@@ -8,6 +8,8 @@ import Register from "./pages/Register";
 import VerifyEmail from "./pages/VerifyEmail";
 import ForgetPassword from "./pages/ForgetPassword";
 
+import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -20,8 +22,13 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/forget-password" element={<ForgetPassword />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
+        <Route path="*" element={<ErrorPage />}></Route>
+
       </Routes>
+
     </ThemeContext>
   );
 }
