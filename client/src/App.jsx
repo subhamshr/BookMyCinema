@@ -10,6 +10,7 @@ import ForgetPassword from "./pages/ForgetPassword";
 
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
+import ThemeContext from "./context/ThemeContext";
 
 function App() {
   return (
