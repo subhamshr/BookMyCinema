@@ -22,7 +22,7 @@ myEvent.addListener("sendOrderDetails", (email, order) => {
     .join("");
   sendMail({
     email,
-    subject: "MovieMate Order Confirmed",
+    subject: "BookMyCinema Order Confirmed",
     html: `<h1>This is your order details : </h1>
       <p> Buyer : ${order.name}</p>
       <p> OrderId : ${order.id}</p>

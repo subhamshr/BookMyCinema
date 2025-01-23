@@ -18,7 +18,7 @@ myEvent.addListener("sendMail", (email) => {
 myEvent.addListener("emailVerification", (email, token) => {
   sendMail({
     email,
-    subject: "MovieMate Email Verification",
+    subject: "BookMyCinema Email Verification",
     html: `<p>This is your OTP for verifying your email : </p>${token}`,
   });
 });
@@ -26,7 +26,7 @@ myEvent.addListener("emailVerification", (email, token) => {
 myEvent.addListener("resetPassword", (email, password) => {
   sendMail({
     email,
-    subject: "MovieMate Password Reset",
+    subject: "BookMyCinema Password Reset",
     html: `<p>You requested for reset password. Your New Password is : <strong>${password}</strong></p>`,
   });
 });
